@@ -22,7 +22,22 @@ public class TaskHttpController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json", consumes = "application/json")
     public TaskTO createTask(@RequestBody @Validated TaskTO task) {
-        return null;
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection
+                    .prepareStatement("INSERT INTO task (description, status, email) VALUES (?, FALSE, ?)",
+                            Statement.RETURN_GENERATED_KEYS);
+            stm.setString(1, task.getDescription());
+            stm.setString(2, task.getEmail());
+            stm.executeUpdate();
+            ResultSet generatedKeys = stm.getGeneratedKeys();
+            generatedKeys.next();
+            int id = generatedKeys.getInt(1);
+            task.setId(id);
+            task.setStatus(false);
+            return task;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
