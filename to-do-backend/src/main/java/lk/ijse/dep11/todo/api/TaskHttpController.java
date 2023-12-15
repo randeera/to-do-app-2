@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -18,5 +19,27 @@ public class TaskHttpController {
     private DataSource pool;
 
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    public TaskTO createTask(@RequestBody @Validated TaskTO task) {
+        return null;
+    }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping(value = "/{id}", consumes = "application/json")
+    public void updateTask(@PathVariable int id,
+                           @RequestBody @Validated(TaskTO.Update.class) TaskTO task){
+
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable("id") int taskId){
+
+    }
+
+    @GetMapping(produces = "application/json", params = {"email"})
+    public List<TaskTO> getAllTasks(String email) {
+        return null;
+    }
 }
