@@ -23,3 +23,12 @@ export async function updateTask(task: TaskDTO) {
     });
     if (!response.ok) throw new Error("Failed to update the task");
 }
+export async function saveTask(task: TaskDTO) {
+    return await (await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(task)
+    })).json() as TaskDTO;
+}
