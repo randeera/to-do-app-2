@@ -1,6 +1,6 @@
 import {Router} from "express";
 import  {Request,Response} from "express";
-import mysql from 'mysql2/promise'
+import mysql, {RowDataPacket} from 'mysql2/promise'
 import {TaskTO} from "../to/task.to.js";
 import {ResultSetHeader} from "mysql2";
 
@@ -43,5 +43,16 @@ async function updateTasks(req:Request,res:Response) {
 
 }
 async function deleteTasks(req:Request,res:Response){
+    const taskId=+req.params.id;
+    const connection=await pool.getConnection()
+    const result= await connection.execute<RowDataPacket[]>(`SELECT * FROM task WHERE id=?`, [taskId]);
+    if(!result.length){
+        res.sendStatus(404);
+        return;
+    }else{
+        await connection.execute(`DELETE FROM task WHERE id=?`,[taskId])
+        res.sendStatus(204)
+    }
+    pool.releaseConnection(connection)
 
 }
