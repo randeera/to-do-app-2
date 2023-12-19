@@ -22,7 +22,11 @@ const  pool = mysql.createPool({
 });
 
 async function getAllTasks(req:Request,res:Response){
-    res.send("<h1>Task Controller: Get</h1>");
+    if(!req.query.email) res.sendStatus(400);
+    const connection=await pool.getConnection();
+    const [taskList]=await connection.execute('SELECT * FROM task WHERE email=?',[req.query.email]);
+    res.json(taskList);
+    pool.releaseConnection(connection);
 }
 async function saveTask(req:Request,res:Response){
     const task=<TaskTO> req.body;
