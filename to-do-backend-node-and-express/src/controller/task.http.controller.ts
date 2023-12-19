@@ -40,6 +40,18 @@ async function saveTask(req:Request,res:Response){
 
 }
 async function updateTasks(req:Request,res:Response) {
+    const taskId=+req.params.id;
+    const task=<TaskTO> req.body;
+    const connection=await pool.getConnection()
+    const result= await connection.execute<RowDataPacket[]>(`SELECT * FROM task WHERE id=?`, [taskId]);
+    if(!result.length){
+        res.sendStatus(404);
+        return;
+    }else{
+        await connection.execute(`UPDATE task SET description=?,status=? WHERE id=?` , [task.description,task.status,taskId])
+        res.sendStatus(204)
+    }
+    pool.releaseConnection(connection)
 
 }
 async function deleteTasks(req:Request,res:Response){
